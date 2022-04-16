@@ -6,6 +6,7 @@ gem "devise"
 gem 'webpacker', '~> 4.2.2'
 gem 'bootstrap-sass'
 gem 'jquery-rails'
+gem 'turbolinks'
 gem 'bootstrap', '~> 5.1', '>= 5.1.3'
 gem 'sass-rails'
 gem 'coffee-script-source', '~> 1.11', '>= 1.11.1'
