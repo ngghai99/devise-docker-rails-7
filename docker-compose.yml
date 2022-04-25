@@ -1,0 +1,56 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - /var/lib/postgresql/data
+    networks:
+      - bridge-network
+
+  redis:
+    image: redis:6.2.5
+    command: redis-server
+    networks:
+      - bridge-network
+
+  web:
+    tty: true
+    stdin_open: true
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    working_dir: /home/app/html
+    environment:
+      DATABASE_HOST: db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      DATABASE_DEVELOPMENT: db_dev
+      DATABASE_TEST: db_test
+      RAILS_ENV: development
+      NODE_ENV: development
+      PORT: 3000
+    command: bash -c "bundle check || bundle install && rake db:create db:migrate && bundle exec rails server -b 0.0.0.0"
+    volumes:
+      - .:/home/app/html:rw
+      - node_modules_cache:/home/app/html/node_modules
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    networks:
+      - bridge-network
+
+networks:
+  bridge-network:
+    driver: bridge
+
+volumes:
+  db:
+  node_modules_cache:
+  bundle_cache:
